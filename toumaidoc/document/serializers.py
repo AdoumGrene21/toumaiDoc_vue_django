@@ -2,14 +2,12 @@ from rest_framework import serializers
 
 from .models import Type, Document, Enseignant
 
-class EnseignantSerializer(serializers.ModelSerializer):
-   
+class EnseignantSerializer(serializers.ModelSerializer): 
     class Meta:
         model = Enseignant
         fields = (
             "id",
-            "name",
-                  
+            "name",                  
         )
 
 

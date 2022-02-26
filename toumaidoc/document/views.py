@@ -1,11 +1,18 @@
+from asyncore import file_wrapper
+import os
 from unicodedata import name
-from django.http import Http404
+from django.conf import settings
+from django.http import Http404, HttpResponse
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Document, Type, Enseignant
 from .serializers import DocumentSerializer, TypeSerializer, EnseignantSerializer
+
+# telechargement de fichier
+from django.core.servers.basehttp import *
+import mimetypes
 
 
 
@@ -40,7 +47,7 @@ def DocumentDetail(request, type_slug, document_slug):
            
    
 
-
+@api_view(['GET'])
 def TypeDetail(request, type_slug):
     try:
         type = Type.objects.get(slug=type_slug)
@@ -49,6 +56,16 @@ def TypeDetail(request, type_slug):
     except Type.DoesNotExist:
         raise Http404
 
+
+
+def download_image(request, path):
+    file_path = os.path.join(settings.MEDIA_ROOT, path)
+    if os.path.exists(file_path):
+        with open(file_path, 'rb') as fh:
+            response = HttpResponse(fh.read(), content_type='toumaidoc/media')
+            response['Content-Disposition']= 'inline'; filename=+os.path.basename(file_path)
+            return response
+    raise Http404
     
 
 
